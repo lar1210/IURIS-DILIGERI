@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PORTAL ELECTRÓNICO JUDICIAL | EJE 2.0</title>
+  <title>PORTAL ELECTRÓNICO JUDICIAL | EJE 2.0 - CSJ Puno</title>
   
   <!-- Sistema Tipográfico Dual -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,13 +12,12 @@
   
   <style>
     /* ==========================================================
-       VARIABLES CSS (MODO CLARO Y OSCURO)
+       VARIABLES Y PALETA CROMÁTICA INSTITUCIONAL (CON DARK MODE)
        ========================================================== */
     :root {
-      --font-ui: 'Inter', sans-serif;
-      --font-doc: 'Merriweather', serif;
+      --font-ui: 'Inter', -apple-system, sans-serif;
+      --font-doc: 'Merriweather', Georgia, serif;
       
-      /* Modo Claro (Por defecto) */
       --bg-body: #faf5f8;
       --bg-surface: #ffffff;
       --bg-card: #fdf2f8;
@@ -30,8 +29,9 @@
       --mag-dark: #3f0314;
       --mag-primary: #750e2e;
       --mag-vivid: #be185d;
+      --mag-light: #fdf2f8;
       --status-green: #059669;
-      --status-bg-green: #f0fdf4;
+      --status-bg: #f0fdf4;
     }
 
     [data-theme="dark"] {
@@ -46,290 +46,411 @@
       --mag-dark: #4a0418;
       --mag-primary: #9f1239;
       --mag-vivid: #e11d48;
+      --mag-light: #1e293b;
       --status-green: #10b981;
-      --status-bg-green: #064e3b;
+      --status-bg: #064e3b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-ui); }
     body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
 
-    /* COMPONENTES BASE */
-    .btn-action-primary {
-      background: linear-gradient(90deg, var(--mag-primary), var(--mag-vivid));
-      color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px;
-      font-weight: 600; font-size: 13px; cursor: pointer; transition: transform 0.2s; width: 100%;
+    /* PANTALLA DE CARGA (SPLASH SCREEN) */
+    #full-page-splash {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(135deg, #18020e, #3f0314, #750e2e);
+      z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
     }
-    .btn-action-primary:hover { transform: translateY(-2px); }
+    .splash-content-wrapper { display: flex; align-items: center; justify-content: center; gap: 24px; color: #ffffff; max-width: 90%; flex-wrap: wrap; animation: fadeInSplash 0.8s ease-out; }
+    @keyframes fadeInSplash { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .splash-themis-svg { width: 110px; height: 180px; flex-shrink: 0; }
+    .splash-text-brand { text-align: left; font-family: var(--font-doc); color: #ffffff; line-height: 1.1; }
+    .splash-text-brand .line-1 { font-size: clamp(22px, 4vw, 36px); letter-spacing: 2px; color: #fbcfe8; display: block;}
+    .splash-text-brand .line-2 { font-size: clamp(32px, 6vw, 54px); font-weight: 700; letter-spacing: 3px; display: block; margin-top: 4px; text-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .splash-progress-container { width: 260px; background: rgba(255, 255, 255, 0.15); height: 6px; border-radius: 6px; margin-top: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+    .splash-progress-bar { height: 100%; background: linear-gradient(90deg, #be185d, #ffffff); width: 0%; transition: width 0.1s linear; }
 
-    /* ENCABEZADO */
-    .sticky-header { position: sticky; top: 0; z-index: 1000; background: var(--mag-darkest); color: white; border-bottom: 2px solid var(--mag-vivid); display: flex; justify-content: space-between; padding: 10px 16px; align-items: center; }
-    .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13px; }
-    .header-controls { display: flex; gap: 8px; align-items: center; }
+    /* MARCA DE AGUA FIJA */
+    .watermark-bg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(75vw, 420px); height: auto; opacity: 0.038; pointer-events: none; z-index: 0; }
+
+    /* ENCABEZADO FIJO */
+    .sticky-header-container { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .header-top-row { background: var(--mag-darkest); color: #ffffff; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 8px; }
+    .header-branding { display: flex; align-items: center; gap: 10px; }
+    .badge-icon { background: rgba(255, 255, 255, 0.12); padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .header-right-widgets { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .lang-switcher-box { display: flex; background: rgba(0,0,0,0.35); padding: 2px; border-radius: 6px; }
+    .lang-btn { background: transparent; border: none; color: #fbcfe8; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 4px; cursor: pointer; }
+    .lang-btn.active { background: var(--mag-vivid); color: #ffffff; }
+    .clock-live-badge { background: #000; border: 1px solid var(--mag-primary); color: #fce7f3; padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 11px; display: flex; align-items: center; gap: 4px; }
+    .btn-exit-app { background: #be185d; color: #ffffff; border: none; padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s; }
     
-    .btn-theme-toggle { background: #334155; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
-    .btn-exit { background: var(--mag-vivid); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    /* MENÚ NAVEGACIÓN INFERIOR */
+    .header-bottom-menu { background: var(--mag-dark); display: flex; overflow-x: auto; padding: 6px 14px; gap: 8px; border-bottom: 2px solid var(--mag-vivid); }
+    .header-bottom-menu::-webkit-scrollbar { display: none; }
+    .menu-nav-btn { background: transparent; border: none; color: #fbcfe8; padding: 7px 12px; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 6px; white-space: nowrap; transition: all 0.2s; }
+    .menu-nav-btn:hover { background: rgba(255, 255, 255, 0.15); color: #ffffff; }
+    .menu-btn-talkback { background: rgba(255, 255, 255, 0.1); border: 1px solid #fbcfe8; color: #ffffff !important; }
+    .menu-btn-theme { background: #1e293b; border: 1px solid #94a3b8; color: #ffffff; margin-left: auto; }
+    .menu-btn-search { background: linear-gradient(90deg, #be185d, #e11d48) !important; color: #ffffff !important; font-weight: 800; }
 
-    /* PANTALLAS */
-    .screen { display: none; flex-grow: 1; padding: 20px 16px; max-width: 1100px; margin: 0 auto; width: 100%; }
-    .screen.active { display: block; }
+    /* PANTALLAS DEL SISTEMA */
+    .screen-stage { display: none !important; width: 100%; flex-grow: 1; position: relative; z-index: 1; }
+    .screen-stage.active { display: flex !important; flex-direction: column; }
+    .center-wrapper { display: flex; flex-grow: 1; align-items: center; justify-content: center; padding: 20px 14px; }
 
-    /* ACORDEONES (TARJETAS) */
-    .card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; transition: background 0.3s; }
-    .card-header { padding: 14px 16px; background: var(--bg-card); font-weight: 800; font-size: 13px; color: var(--mag-vivid); cursor: pointer; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-    .card-body { padding: 16px; display: block; }
-    .card-body.collapsed { display: none; }
+    /* COMPONENTES UI */
+    .btn-action-primary { background: linear-gradient(90deg, var(--mag-primary), var(--mag-vivid)); color: #ffffff; border: none; padding: 13px 22px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; transition: all 0.2s; box-shadow: 0 4px 14px rgba(190, 24, 93, 0.3); }
+    .btn-action-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(190, 24, 93, 0.4); }
+    
+    .splash-card { background: var(--bg-surface); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: 0 20px 45px rgba(0,0,0,0.16); width: 100%; max-width: 620px; overflow: hidden; text-align: center; }
+    .splash-hero-magenta { background: linear-gradient(135deg, #3f0314, #750e2e, #be185d); color: white; padding: 30px 20px 24px; }
+    .themis-white-frame { margin: 0 auto 14px; width: 110px; height: 130px; background: #ffffff; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.22); border: 3px solid #ffffff; display: flex; align-items: center; justify-content: center; }
 
-    /* LÍNEA DE TIEMPO NLPT */
-    .stepper { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 11px; text-align: center; }
-    .step { flex: 1; position: relative; }
-    .step-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; z-index: 2; position: relative; }
-    .step.done .step-circle { background: var(--status-green); border-color: var(--status-green); color: white; }
-    .step.active .step-circle { background: var(--mag-vivid); border-color: var(--mag-vivid); color: white; box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.2); }
-    .step:not(:last-child)::after { content: ''; position: absolute; top: 15px; left: 50%; width: 100%; height: 2px; background: var(--border-color); z-index: 1; }
-    .step.done:not(:last-child)::after { background: var(--status-green); }
+    /* ACORDEONES EJE 2.0 */
+    .accordion-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: background 0.3s; }
+    .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+    .accordion-header h3 { color: var(--mag-vivid); font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+    .accordion-content { margin-top: 12px; display: block; }
+    .accordion-content.collapsed { display: none; }
+
+    /* LÍNEA DE TIEMPO NLPT (STEPPER) */
+    .stepper-bar { display: flex; justify-content: space-between; margin: 14px 0 20px; font-size: 11px; text-align: center; }
+    .stepper-step { flex: 1; position: relative; }
+    .stepper-circle { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--border-color); background: var(--bg-surface); color: var(--text-muted); z-index: 2; position: relative; }
+    .stepper-done { background: var(--status-green); color: white; border-color: var(--status-green); }
+    .stepper-active { background: var(--mag-vivid); color: white; border-color: var(--mag-vivid); box-shadow: 0 0 0 3px rgba(190,24,93,0.25); }
+    .stepper-step:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 50%; width: 100%; height: 2px; background: var(--border-color); z-index: 1; }
+    
+    .timeline-wrapper { position: relative; padding: 16px 0 16px 26px; border-left: 3px solid var(--mag-vivid); margin-left: 12px; }
+    .timeline-node { position: relative; margin-bottom: 18px; transition: transform 0.2s; }
+    .timeline-dot { position: absolute; left: -35px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--mag-vivid); border: 3px solid var(--bg-surface); box-shadow: 0 0 0 2px var(--mag-vivid); }
+    .timeline-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; }
+
+    /* LEGAL DESIGN: FICHA RESUMEN DEMANDA */
+    .ficha-resumen { background: var(--bg-card); border-left: 4px solid var(--mag-primary); padding: 16px; border-radius: 6px; font-size: 12px; margin-bottom: 14px; }
+    .ficha-resumen ul { margin-left: 20px; margin-top: 8px; color: var(--text-main); line-height: 1.6; }
 
     /* TABLA ÍNDICE DIGITAL */
+    .table-container { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { background: var(--mag-dark); color: white; text-align: left; padding: 10px; }
-    td { padding: 10px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
-    .icon-doc { font-size: 14px; margin-right: 6px; }
+    th { background: var(--mag-dark); color: white; text-align: left; padding: 9px 8px; font-weight: 700; }
+    td { padding: 9px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    .btn-row-action { border: none; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; background: #475569; color: white; transition: background 0.2s;}
+    .btn-row-action:hover { background: #334155; }
 
-    /* LEGAL DESIGN: FICHA DEMANDA */
-    .ficha-resumen { background: var(--bg-card); border-left: 4px solid var(--mag-primary); padding: 16px; border-radius: 6px; font-size: 12px; margin-bottom: 16px; }
-    .ficha-resumen ul { margin-left: 20px; margin-top: 8px; color: var(--text-main); }
+    /* MODALES CON TRANSICIONES */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 14px; z-index: 2500; animation: fadeInOverlay 0.25s ease-out; }
+    @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+    .modal-sheet { background: var(--bg-surface); border-radius: 16px; max-width: 780px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.35); animation: popSheet 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes popSheet { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* MODAL Y VISOR PDF DUAL */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 16px; }
-    .modal-content { background: var(--bg-surface); width: 100%; max-width: 1000px; height: 90vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
-    .modal-header { padding: 12px 16px; background: var(--mag-darkest); color: white; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; }
-    .pdf-workspace { display: flex; flex-grow: 1; height: calc(100% - 45px); }
+    /* VISOR PDF SIMULADO + PANEL CRIPTOGRÁFICO */
+    .pdf-modal-container { max-width: 1000px !important; display: flex; flex-direction: column; overflow: hidden; height: 95vh; background: var(--bg-surface); }
+    .pdf-bar { background: #334155; color: white; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; }
+    .pdf-workspace { display: flex; flex-grow: 1; overflow: hidden; }
     
-    /* Panel PDF con Iframe */
-    .pdf-viewer { flex: 7; background: #525659; position: relative; }
-    .pdf-viewer iframe { width: 100%; height: 100%; border: none; }
+    .pdf-viewer-area { flex: 7; background: #525659; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    .pdf-paper { background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.3); width: 100%; max-width: 680px; padding: 40px 36px; font-family: var(--font-doc); font-size: 13px; line-height: 1.6; color: #000; position: relative; min-height: 800px; }
     
-    /* Panel Criptográfico Lateral (Ley 27269) */
-    .crypto-panel { flex: 3; background: var(--bg-card); border-left: 1px solid var(--border-color); padding: 16px; overflow-y: auto; font-size: 11px; }
-    .crypto-badge { background: var(--status-bg-green); color: var(--status-green); padding: 8px; border-radius: 6px; border: 1px solid var(--status-green); margin-bottom: 12px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    .crypto-panel { flex: 3; background: var(--bg-card); border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; font-size: 11px; color: var(--text-main); }
+    .crypto-badge { background: var(--status-bg); color: var(--status-green); padding: 10px; border-radius: 6px; border: 1px solid var(--status-green); margin-bottom: 16px; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 12px; }
     
-    /* SKELETON LOADER */
-    .skeleton-box { background: var(--bg-card); height: 20px; border-radius: 4px; margin-bottom: 8px; position: relative; overflow: hidden; }
-    .skeleton-box::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: shimmer 1.5s infinite; }
-    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .pdf-court-header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 20px; font-family: var(--font-ui); }
+    .pdf-sij-barcode { position: absolute; top: 15px; right: 15px; border: 1px solid #000; padding: 3px 6px; font-family: monospace; font-size: 9px; text-align: center; background: #fafafa; }
+    .pdf-censored-black { background: #000000; color: #000000; user-select: none; padding: 0 4px; border-radius: 2px; }
+    .pdf-digital-signature { margin-top: 30px; border: 2px solid #16a34a; background: #f0fdf4; padding: 10px 14px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-ui); font-size: 10px; color: #14532d; }
 
-    /* AUTOCOMPLETE SEARCH */
-    .search-container { position: relative; max-width: 500px; margin: 0 auto 20px; }
-    .search-input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 2px solid var(--mag-primary); background: var(--bg-surface); color: var(--text-main); font-weight: bold; font-size: 14px; outline: none; }
+    /* CHATBOT IURISNIANO 2.0 */
+    #chatbot-wrapper { position: fixed; bottom: 22px; right: 22px; z-index: 3000; display: none; flex-direction: column; align-items: flex-end; }
+    .chat-incentive-bubble { background: var(--bg-surface); color: var(--text-main); border: 2px solid var(--mag-vivid); padding: 8px 12px; border-radius: 14px 14px 2px 14px; font-size: 11px; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,0.2); margin-bottom: 8px; cursor: pointer; animation: floatPrompt 3s ease-in-out infinite; }
+    @keyframes floatPrompt { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    
+    #chatbot-bubble { background: linear-gradient(135deg, #750e2e, #be185d, #e11d48); background-size: 200% 200%; color: white; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(190, 24, 93, 0.45); cursor: pointer; border: 2px solid #fbcfe8; animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(190, 24, 93, 0.6); } 70% { box-shadow: 0 0 0 14px rgba(190, 24, 93, 0); } 100% { box-shadow: 0 0 0 0 rgba(190, 24, 93, 0); } }
+    
+    #chatbot-dialog { position: fixed; bottom: 95px; right: 22px; width: 370px; height: 530px; background: var(--bg-surface); border-radius: 18px; border: 1px solid var(--border-color); box-shadow: 0 12px 35px rgba(0,0,0,0.3); display: none; flex-direction: column; z-index: 3000; overflow: hidden; animation: popupChat 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes popupChat { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+    /* FOOTER */
+    .academic-footer { background: #18020e; color: #fbcfe8; font-size: 11px; text-align: center; padding: 16px 14px; border-top: 2px solid #750e2e; margin-top: auto; }
   </style>
 </head>
 <body>
 
-  <!-- ENCABEZADO FIJO -->
-  <header class="sticky-header">
-    <div class="header-logo">
-      <span>⚖️</span> EJE 2.0 | CSJ PUNO
+  <!-- PANTALLA DE CARGA NATIVA (THEMIS) -->
+  <div id="full-page-splash">
+    <div class="splash-content-wrapper">
+      <svg class="splash-themis-svg" viewBox="0 0 200 320" fill="none">
+        <path d="M100 20 C108 20 115 26 115 34 C115 40 110 45 105 47 L105 55 L95 55 L95 47 C90 45 85 40 85 34 C85 26 92 20 100 20 Z" fill="#ffffff"/>
+        <rect x="83" y="32" width="34" height="6" fill="#750e2e" rx="2"/>
+        <path d="M78 58 L122 58 L128 85 L118 130 L125 180 L115 260 L85 260 L75 180 L82 130 L72 85 Z" fill="#ffffff"/>
+        <path d="M72 85 Q60 105 50 140 L40 180 L30 175 L45 125 L65 75 Z" fill="#ffffff"/>
+        <path d="M30 170 L20 220 L28 222 L36 175 Z" fill="#ffffff"/>
+        <path d="M15 220 L55 120" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M10 215 L20 225 L12 233 L2 223 Z" fill="#ffffff"/>
+        <path d="M122 58 L155 35 L165 42 L128 80 Z" fill="#ffffff"/>
+        <path d="M155 35 L190 35" stroke="#ffffff" stroke-width="3"/>
+        <path d="M155 35 L145 75 L165 75 Z" fill="none" stroke="#ffffff" stroke-width="2"/>
+        <path d="M140 75 Q155 85 170 75 Z" fill="#ffffff"/>
+        <path d="M190 35 L180 75 L200 75 Z" fill="none" stroke="#ffffff" stroke-width="2"/>
+        <path d="M175 75 Q190 85 205 75 Z" fill="#ffffff"/>
+      </svg>
+      <div class="splash-text-brand">
+        <span class="line-1">PORTAL ELECTRÓNICO</span>
+        <span class="line-2">JUDICIAL 2.0</span>
+      </div>
     </div>
-    <div class="header-controls">
-      <button class="btn-theme-toggle" onclick="toggleTheme()">🌙 Tema</button>
-      <button class="btn-exit" onclick="switchScreen(1)">🔍 Buscar</button>
-    </div>
-  </header>
-
-  <!-- PANTALLA 1: BÚSQUEDA PREDICTIVA -->
-  <div id="screen-1" class="screen active" style="text-align: center; margin-top: 50px;">
-    <h2 style="color: var(--mag-primary); margin-bottom: 8px;">Búsqueda Jurisdiccional</h2>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px;">Ingrese el correlativo del expediente (Ej. 00170)</p>
-    
-    <div class="search-container">
-      <input type="text" class="search-input" id="searchInput" list="expedientes-recientes" placeholder="00000-2023-0-2101-JR-LA-01" onkeypress="if(event.key==='Enter') loadExpediente()">
-      <datalist id="expedientes-recientes">
-        <option value="00170-2023-0-2101-JR-LA-01"></option>
-      </datalist>
-    </div>
-    <button class="btn-action-primary" style="max-width: 250px;" onclick="loadExpediente()">Consultar Expediente</button>
+    <div class="splash-progress-container"><div id="splash-progress-bar" class="splash-progress-bar"></div></div>
   </div>
 
-  <!-- PANTALLA 2: SKELETON LOADER -->
-  <div id="screen-2" class="screen">
-    <h3 style="color: var(--text-main); margin-bottom: 16px;">Recuperando información desde la Base de Datos...</h3>
-    <div class="card"><div class="card-body">
-      <div class="skeleton-box" style="width: 40%; height: 30px;"></div>
-      <div class="skeleton-box" style="width: 100%;"></div>
-      <div class="skeleton-box" style="width: 80%;"></div>
-    </div></div>
-    <div class="card"><div class="card-body">
-      <div class="skeleton-box" style="width: 100%; height: 60px;"></div>
-    </div></div>
+  <div class="watermark-bg">
+    <svg viewBox="0 0 200 320" fill="none" style="width: 100%; height: 100%;">
+      <path d="M100 20 C108 20 115 26 115 34 C115 40 110 45 105 47 L105 55 L95 55 L95 47 C90 45 85 40 85 34 C85 26 92 20 100 20 Z" fill="#750e2e"/>
+      <rect x="83" y="32" width="34" height="6" fill="#ffffff" rx="2"/>
+      <path d="M78 58 L122 58 L128 85 L118 130 L125 180 L115 260 L85 260 L75 180 L82 130 L72 85 Z" fill="#750e2e"/>
+      <path d="M122 58 L155 35 L165 42 L128 80 Z" fill="#750e2e"/>
+      <path d="M155 35 L190 35" stroke="#750e2e" stroke-width="3"/>
+      <path d="M15 220 L55 120" stroke="#750e2e" stroke-width="4"/>
+    </svg>
   </div>
 
-  <!-- PANTALLA 3: EXPEDIENTE COMPLETO -->
-  <div id="screen-3" class="screen">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h2 style="font-size: 16px; color: var(--mag-primary);">EXP: 00170-2023-0-2101-JR-LA-01</h2>
-      <span style="background: var(--status-bg-green); color: var(--status-green); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;">EJECUCIÓN FIRME</span>
-    </div>
-
-    <!-- I. METADATOS SIJ -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-metadatos')">I. REPORTE DEL EXPEDIENTE (SIJ) <span>▼</span></div>
-      <div class="card-body" id="body-metadatos" style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <div><strong style="color: var(--text-muted);">Órgano:</strong> 1° Juzgado de Trabajo - Zona Norte</div>
-        <div><strong style="color: var(--text-muted);">Juez:</strong> Huamán Romero, Gonzalo Víctor</div>
-        <div><strong style="color: var(--text-muted);">Materia:</strong> Pago de Beneficios Sociales (NLPT)</div>
-        <div><strong style="color: var(--text-muted);">Fecha de Inicio:</strong> 12/03/2023</div>
-        <div style="grid-column: 1 / -1;"><strong style="color: var(--text-muted);">Sumilla Principal:</strong> SE INTERPONE DEMANDA LABORAL DE PAGO DE BENEFICIOS SOCIALES, REINTEGRO DE REMUNERACIONES E INDEMNIZACIÓN.</div>
-      </div>
-    </div>
-
-    <!-- II. LÍNEA DE TIEMPO PROCESAL NLPT -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-timeline')">II. TRAZABILIDAD PROCESAL (NLPT 29497) <span>▼</span></div>
-      <div class="card-body" id="body-timeline">
-        <div class="stepper">
-          <div class="step done"><div class="step-circle">✓</div><strong>1. Postulación</strong></div>
-          <div class="step done"><div class="step-circle">✓</div><strong>2. Conciliación</strong></div>
-          <div class="step done"><div class="step-circle">✓</div><strong>3. Juzgamiento</strong></div>
-          <div class="step done"><div class="step-circle">✓</div><strong>4. Decisión</strong></div>
-          <div class="step active"><div class="step-circle">5</div><strong style="color: var(--mag-vivid);">5. Ejecución</strong></div>
+  <!-- ENCABEZADO FIJO Y MENÚ -->
+  <div class="sticky-header-container">
+    <div class="header-top-row">
+      <div class="header-branding">
+        <div class="badge-icon">
+          <svg style="width: 22px; height: 22px; color: #fbcfe8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 10v11"/><path d="M19 10v11"/><path d="M9 10v11"/><path d="M15 10v11"/><path d="M12 2 2 7h20L12 2z"/>
+          </svg>
         </div>
-        <div style="background: var(--bg-body); padding: 12px; border-radius: 8px; font-size: 11px; border: 1px solid var(--border-color);">
-          <strong style="color: var(--mag-vivid);">Hito Actual:</strong> Resolución N° 08 - Se requiere a la Entidad Demandada el cumplimiento del mandato judicial (Depósito en Banco de la Nación) bajo apercibimiento de multa.
+        <div>
+          <div style="font-size: 8px; font-weight: 800; color: #fbcfe8; letter-spacing: 0.5px;">PODER JUDICIAL DEL PERÚ</div>
+          <div style="font-size: 12px; font-weight: 700;">PORTAL ELECTRÓNICO JUDICIAL</div>
         </div>
       </div>
-    </div>
-
-    <!-- III. LEGAL DESIGN: FICHA DE DEMANDA -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-demanda')">III. POSTULACIÓN Y DEMANDA (RESUMEN) <span>▼</span></div>
-      <div class="card-body" id="body-demanda">
-        <div class="ficha-resumen">
-          <strong>📝 RESUMEN DE LA PRETENSIÓN JURÍDICA:</strong>
-          <ul>
-            <li><strong>Petitorio:</strong> Pago de CTS, Vacaciones truncas y Gratificaciones no gozadas.</li>
-            <li><strong>Cuantía Estimada:</strong> S/ 24,500.00 (Sujeto a peritaje contable).</li>
-            <li><strong>Medios Probatorios Clave:</strong> Contratos modales desnaturalizados (Folios 5-18).</li>
-          </ul>
+      <div class="header-right-widgets">
+        <div class="lang-switcher-box">
+          <button class="lang-btn active">ES</button>
         </div>
-        <button class="btn-action-primary" onclick="openPdfViewer('Demanda_00170.pdf', 'Hu*** Al*** Ay***')">📄 Ver Demanda Completa (PDF Censurado)</button>
+        <div class="clock-live-badge">
+          <span>🕒</span> <span id="live-clock-text">--:--:--</span>
+        </div>
+        <button onclick="exitToHome()" class="btn-exit-app" title="Cerrar sesión">🚪 <span>Salir</span></button>
       </div>
     </div>
-
-    <!-- IV. SUJETOS PROCESALES E INTEROPERABILIDAD -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-sujetos')">IV. SUJETOS PROCESALES Y DOMICILIO ELECTRÓNICO (SINOE) <span>▼</span></div>
-      <div class="card-body" id="body-sujetos" style="font-size: 12px;">
-        <div style="margin-bottom: 12px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
-          <strong style="color: var(--mag-primary);">DEMANDANTE:</strong> Hu*** Al*** Ay*** (DNI 0145****)<br>
-          <span style="color: var(--text-muted);">Defensa Técnica: Abog. Ma*** Ro*** (CASILLA SINOE: 45092)</span>
-        </div>
-        <div style="margin-bottom: 12px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
-          <strong style="color: var(--text-main);">DEMANDADO:</strong> En*** Pr*** Sa*** Ro*** (RUC 2012****)<br>
-          <span style="color: var(--text-muted);">Apoderado Legal: Procuraduría Pública (CASILLA SINOE: 11023)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- V. ÍNDICE DIGITAL DE ACTUADOS -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-indice')">V. ÍNDICE DIGITAL DE ACTUADOS (D. LEG. 1412) <span>▼</span></div>
-      <div class="card-body" id="body-indice" style="padding: 0; overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Folios</th>
-              <th>Fecha Ingreso</th>
-              <th>Actuación / Documento</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1-15</td><td>12/03/2023</td>
-              <td><span class="icon-doc">📝</span> <strong>Escrito N° 01:</strong> Demanda Principal y Anexos</td>
-              <td><button onclick="openPdfViewer('Demanda.pdf', 'Hu*** Al*** Ay***')" style="padding: 4px 8px; cursor: pointer;">Ver PDF</button></td>
-            </tr>
-            <tr>
-              <td>16</td><td>20/03/2023</td>
-              <td><span class="icon-doc">⚖️</span> <strong>Resolución N° 01:</strong> Auto Admisorio</td>
-              <td><button onclick="openPdfViewer('Res_01.pdf', 'Juez')" style="padding: 4px 8px; cursor: pointer;">Ver PDF</button></td>
-            </tr>
-            <tr>
-              <td>45-48</td><td>15/06/2023</td>
-              <td><span class="icon-doc">🎤</span> <strong>Acta Judicial:</strong> Audiencia Única de Juzgamiento</td>
-              <td><button onclick="openPdfViewer('Acta.pdf', 'Juez')" style="padding: 4px 8px; cursor: pointer;">Ver PDF</button></td>
-            </tr>
-            <tr>
-              <td>50-62</td><td>28/08/2023</td>
-              <td><span class="icon-doc">⚖️</span> <strong>Resolución N° 04 (SENTENCIA):</strong> Declara FUNDADA la demanda</td>
-              <td><button onclick="openPdfViewer('Sentencia.pdf', 'Juez')" style="padding: 4px 8px; cursor: pointer;">Ver PDF</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- VI. BANDEJA DE NOTIFICACIONES SINOE -->
-    <div class="card">
-      <div class="card-header" onclick="toggleCard('body-sinoe')">VI. BANDEJA DE NOTIFICACIONES ELECTRÓNICAS (SINOE) <span>▼</span></div>
-      <div class="card-body" id="body-sinoe" style="font-size: 11px;">
-        <div style="background: var(--bg-body); padding: 10px; border-left: 3px solid var(--mag-vivid); margin-bottom: 8px;">
-          <strong>Cédula N° 14502-2023</strong> | Referencia: Resolución N° 04 (Sentencia)<br>
-          <span style="color: var(--status-green);">✓ Notificado a Casilla 45092 (Demandante) el 29/08/2023 08:15:02</span>
-        </div>
-        <div style="background: var(--bg-body); padding: 10px; border-left: 3px solid var(--mag-vivid);">
-          <strong>Cédula N° 14503-2023</strong> | Referencia: Resolución N° 04 (Sentencia)<br>
-          <span style="color: var(--status-green);">✓ Notificado a Casilla 11023 (Demandado) el 29/08/2023 08:15:05</span>
-        </div>
-      </div>
-    </div>
-
+    <nav class="header-bottom-menu">
+      <button onclick="exitToHome()" class="menu-nav-btn">Inicio</button>
+      <button class="menu-nav-btn">📖 Instructivo</button>
+      <button onclick="toggleTalkBackMode()" class="menu-nav-btn menu-btn-talkback" id="nav-item-talkback">🔊 TalkBack</button>
+      <button onclick="toggleTheme()" class="menu-nav-btn menu-btn-theme">🌙 Oscuro/Claro</button>
+      <button onclick="startSearchFlow()" class="menu-nav-btn menu-btn-search">🔍 Búsqueda de Causas</button>
+    </nav>
   </div>
 
-  <!-- MODAL: VISOR DE DOCUMENTOS Y VERIFICACIÓN CRIPTOGRÁFICA -->
-  <div id="modal-pdf" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span id="modal-doc-title">Documento Digital</span>
-        <button onclick="closePdfViewer()" style="background: none; border: none; color: white; font-size: 16px; cursor: pointer;">✕ Cerrar</button>
+  <!-- PANTALLAS DEL SISTEMA -->
+  <div style="flex-grow: 1; display: flex; flex-direction: column;">
+
+    <!-- PANTALLA 0: PORTADA ACADÉMICA -->
+    <div id="screen-0" class="screen-stage active center-wrapper">
+      <div class="splash-card">
+        <div class="splash-hero-magenta">
+          <h1 style="font-size: 19px; font-weight: 800;">PORTAL ELECTRÓNICO JUDICIAL (CEJ / EJE)</h1>
+          <p style="font-size: 12px; color: #fce7f3; margin-top: 4px;">Prototipo Académico de Gobierno Digital e Informático</p>
+        </div>
+        <div style="padding: 22px; text-align: left;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 14px; font-size: 12px; line-height: 1.7;">
+            <div><span style="color: var(--text-muted);">Estudiante:</span> <strong style="color: var(--mag-primary); font-size: 13px;">Sonia Pilar Condori Ruelas</strong></div>
+            <div><span style="color: var(--text-muted);">Curso:</span> <strong style="color: var(--mag-dark);">GOBIERNO DIGITAL Y DERECHO INFORMÁTICO</strong></div>
+            <div><span style="color: var(--text-muted);">Docente:</span> <strong style="color: var(--mag-dark);">Dr. Michael Espinoza Coila</strong></div>
+          </div>
+          <button onclick="switchScreen(2)" class="btn-action-primary">
+            <span>Ingresar al Sistema Jurisdiccional</span> →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: BÚSQUEDA GENERAL ACTUALIZADA -->
+    <div id="screen-2" class="screen-stage">
+      <div style="max-width: 1100px; width: 100%; margin: 20px auto; padding: 0 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+        
+        <div id="panel-search-form" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 20px; padding: 22px; max-width: 650px; margin: 0 auto; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <div style="background: var(--mag-dark); color: white; padding: 14px 18px; border-radius: 12px 12px 0 0; margin: -22px -22px 18px; display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 13px;">Búsqueda Jurisdiccional de Causas</strong>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+            <button style="background: var(--mag-primary); color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11px; font-weight: bold;">🔍 Búsqueda General</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 12px;">
+            <div><label style="font-size: 11px; font-weight: bold; color: var(--text-muted);">Correlativo</label><input type="text" value="00170" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; font-weight: bold; background: var(--bg-body); color: var(--text-main);"></div>
+            <div><label style="font-size: 11px; font-weight: bold; color: var(--text-muted);">Año</label><input type="text" value="2023" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; font-weight: bold; background: var(--bg-body); color: var(--text-main);"></div>
+            <div><label style="font-size: 11px; font-weight: bold; color: var(--text-muted);">Cuaderno</label><input type="text" value="0" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; font-weight: bold; background: var(--bg-body); color: var(--text-main);"></div>
+            <div><label style="font-size: 11px; font-weight: bold; color: var(--text-muted);">Distrito Jud.</label><input type="text" value="2101" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; font-weight: bold; background: var(--bg-body); color: var(--text-main);"></div>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 16px;">
+            Expediente asignado: <strong style="color: var(--mag-primary);">00170-2023-0-2101-JR-LA-01</strong> (Hu*** Al*** Ay*** vs En*** Pr*** Sa*** Ro***)
+          </div>
+          <button onclick="startSearchFlow()" class="btn-action-primary"><span>Consultar Expediente (Ley 29497)</span> →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 4: CARGA ASÍNCRONA (SKELETON) -->
+    <div id="screen-4" class="screen-stage center-wrapper">
+      <div style="max-width: 400px; width: 100%; background: var(--bg-surface); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center;">
+        <h3 style="color: var(--text-main); margin-bottom: 16px;">Indexando Cuaderno Laboral...</h3>
+        <div style="background: var(--bg-card); height: 20px; border-radius: 4px; margin-bottom: 10px; animation: pulse 1.5s infinite;"></div>
+        <div style="background: var(--bg-card); height: 20px; border-radius: 4px; width: 80%; margin: 0 auto; animation: pulse 1.5s infinite;"></div>
+      </div>
+    </div>
+    <style>@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }</style>
+
+    <!-- PANTALLA 5: EXPEDIENTE LABORAL EJE 2.0 -->
+    <div id="screen-5" class="screen-stage">
+      <div style="max-width: 1100px; width: 100%; margin: 16px auto; padding: 0 16px; flex-grow: 1;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-size: 16px; color: var(--mag-primary); font-weight: 800;">EXP: 00170-2023-0-2101-JR-LA-01</h2>
+          <span style="background: var(--status-bg); color: var(--status-green); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 1px solid var(--status-green);">EJECUCIÓN DE SENTENCIA (FIRME)</span>
+        </div>
+
+        <!-- I. METADATOS SIJ -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-1')"><h3>I. REPORTE DE EXPEDIENTE (SIJ)</h3><span id="acc-1-icon">▲</span></div>
+          <div id="acc-1" class="accordion-content">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 12px;">
+              <div><span style="color: var(--text-muted); display: block;">Distrito Judicial / Sede:</span> <strong>Puno / Puno</strong></div>
+              <div><span style="color: var(--text-muted); display: block;">Juzgado:</span> <strong>Juzgado de Trabajo - Zona Norte</strong></div>
+              <div><span style="color: var(--text-muted); display: block;">Juez a Cargo:</span> <strong>Huamán Romero, Gonzalo Víctor</strong></div>
+              <div><span style="color: var(--text-muted); display: block;">Materia / Vía:</span> <strong style="color: var(--mag-primary);">Pago de Beneficios Sociales (NLPT)</strong></div>
+              <div><span style="color: var(--text-muted); display: block;">Fecha de Inicio:</span> <strong>12/03/2023</strong></div>
+              <div style="grid-column: 1 / -1;"><span style="color: var(--text-muted); display: block;">Sumilla Principal:</span> <strong>SE INTERPONE DEMANDA LABORAL DE PAGO DE BENEFICIOS SOCIALES, REINTEGRO DE REMUNERACIONES E INDEMNIZACIÓN.</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- II. LÍNEA DE TIEMPO PROCESAL NLPT -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-2')"><h3>II. TRAZABILIDAD PROCESAL (LEY N° 29497 - NLPT)</h3><span id="acc-2-icon">▲</span></div>
+          <div id="acc-2" class="accordion-content">
+            <div class="stepper-bar">
+              <div class="stepper-step"><div class="stepper-circle stepper-done">✓</div><strong>1. Postulación</strong></div>
+              <div class="stepper-step"><div class="stepper-circle stepper-done">✓</div><strong>2. Conciliación</strong></div>
+              <div class="stepper-step"><div class="stepper-circle stepper-done">✓</div><strong>3. Juzgamiento</strong></div>
+              <div class="stepper-step"><div class="stepper-circle stepper-done">✓</div><strong>4. Decisión</strong></div>
+              <div class="stepper-step"><div class="stepper-circle stepper-active">5</div><strong style="color: var(--mag-vivid);">5. Ejecución</strong></div>
+            </div>
+            <div class="timeline-wrapper" id="timeline-flow-box">
+              <!-- Rellenado por JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- III. LEGAL DESIGN: FICHA DEMANDA -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-3')"><h3>III. POSTULACIÓN Y DEMANDA (RESUMEN)</h3><span id="acc-3-icon">▲</span></div>
+          <div id="acc-3" class="accordion-content">
+            <div class="ficha-resumen">
+              <strong style="color: var(--mag-primary); font-size: 13px;">📝 RESUMEN DE LA PRETENSIÓN JURÍDICA:</strong>
+              <ul>
+                <li><strong>Petitorio:</strong> Pago de Compensación por Tiempo de Servicios (CTS), Vacaciones truncas y Gratificaciones.</li>
+                <li><strong>Cuantía Estimada:</strong> S/ 18,400.00 (Sujeto a peritaje contable judicial).</li>
+                <li><strong>Medios Probatorios:</strong> Contratos modales y boletas de pago (Folios 1-15).</li>
+              </ul>
+            </div>
+            <button class="btn-action-primary" onclick="openPdfDocument(1)" style="width: auto;">📄 Ver Demanda Completa (Censurada Ley 29733)</button>
+          </div>
+        </div>
+
+        <!-- IV. SUJETOS PROCESALES E INTEROPERABILIDAD -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-4')"><h3>IV. SUJETOS PROCESALES Y DOMICILIO ELECTRÓNICO (SINOE)</h3><span id="acc-4-icon">▲</span></div>
+          <div id="acc-4" class="accordion-content" style="font-size: 12px;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-weight: bold; font-size: 13px; color: var(--mag-primary);">DEMANDANTE: Hu*** Al*** Ay*** (DNI 0145****)</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin: 4px 0;">Defensa Técnica: Abog. Ma*** Ro*** (Reg. CAP 102) | Casilla SINOE: 45092</div>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-weight: bold; font-size: 13px; color: var(--mag-vivid);">DEMANDADO: En*** Pr*** Sa*** Ro*** (RUC 2012****)</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin: 4px 0;">Apoderado: Procuraduría Pública | Casilla SINOE: 11023</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- V. ÍNDICE DIGITAL DE ACTUADOS -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-5')"><h3>V. ÍNDICE DIGITAL DE ACTUADOS (D. LEG. 1412)</h3><span id="acc-5-icon">▲</span></div>
+          <div id="acc-5" class="accordion-content">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Folios</th><th>Fecha</th><th>Actuación Judicial / Tipo Documento</th><th>Firma Digital</th></tr></thead>
+                <tbody id="acts-table-body">
+                  <!-- Rellenado por JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VI. BANDEJA DE NOTIFICACIONES SINOE -->
+        <div class="accordion-card">
+          <div class="accordion-header" onclick="toggleAccordion('acc-6')"><h3>VI. BANDEJA DE NOTIFICACIONES (SINOE)</h3><span id="acc-6-icon">▲</span></div>
+          <div id="acc-6" class="accordion-content" style="font-size: 11px;">
+            <div style="background: var(--bg-body); padding: 10px; border-left: 3px solid var(--status-green); margin-bottom: 8px; border-radius: 4px;">
+              <strong style="color: var(--text-main);">Cédula N° 14502-2023</strong> | Ref: Resolución N° 04 (Sentencia)<br>
+              <span style="color: var(--status-green);">✓ Cargo de Recepción: Casilla 45092 (Demandante) el 29/08/2023 08:15:02</span>
+            </div>
+            <div style="background: var(--bg-body); padding: 10px; border-left: 3px solid var(--status-green); border-radius: 4px;">
+              <strong style="color: var(--text-main);">Cédula N° 14503-2023</strong> | Ref: Resolución N° 04 (Sentencia)<br>
+              <span style="color: var(--status-green);">✓ Cargo de Recepción: Casilla 11023 (Demandado) el 29/08/2023 08:15:05</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VISOR DE DOCUMENTOS SIMULADO CON PANEL CRIPTOGRÁFICO -->
+  <div id="modal-pdf-view" class="modal-overlay">
+    <div class="modal-sheet pdf-modal-container">
+      <div class="pdf-bar">
+        <span id="pdf-doc-name">Documento_Judicial.pdf</span>
+        <button onclick="closeModal('modal-pdf-view')" style="background: #ef4444; border: none; color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕ Cerrar EJE</button>
       </div>
       <div class="pdf-workspace">
         
-        <!-- VISOR IFRAME PARA PDF REAL -->
-        <div class="pdf-viewer">
-          <!-- Nota: En GitHub, cambiar "placeholder.pdf" por la ruta real "documentos/demanda_00170_censurado.pdf" -->
-          <iframe id="iframe-pdf" src="about:blank"></iframe>
-          <div id="pdf-placeholder" style="position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); color: white; text-align: center; font-family: var(--font-doc);">
-            <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
-            <h3>Renderizado PDF</h3>
-            <p style="font-size: 12px; margin-top: 10px;">En producción, el atributo <code style="background: #333; padding: 2px 4px;">src="documentos/archivo.pdf"</code> del iframe cargará el archivo real.</p>
+        <!-- VISOR SIMULADO (A petición expresa del usuario para mantener la estética original con censura) -->
+        <div class="pdf-viewer-area">
+          <div class="pdf-paper" id="pdf-doc-paper">
+            <!-- Inyectado por JS -->
           </div>
         </div>
 
-        <!-- PANEL DE VALIDACIÓN CRIPTOGRÁFICA (Ley 27269) -->
+        <!-- PANEL CRIPTOGRÁFICO LEY 27269 -->
         <div class="crypto-panel">
-          <div class="crypto-badge">
-            <span>🔒</span> FIRMA DIGITAL VÁLIDA
-          </div>
+          <div class="crypto-badge"><span>🔒</span> FIRMA DIGITAL VÁLIDA</div>
           <div style="margin-bottom: 12px;">
-            <strong style="color: var(--text-muted);">Firmante Identificado:</strong><br>
+            <strong>Firmante Identificado:</strong><br>
             <span id="crypto-signer" style="color: var(--mag-vivid); font-weight: bold;">Cargando...</span>
           </div>
           <div style="margin-bottom: 12px;">
-            <strong style="color: var(--text-muted);">Entidad de Certificación:</strong><br>
-            RENIEC - PKI Estado Peruano (IOFE)
+            <strong>Entidad de Certificación (IOFE):</strong><br>
+            RENIEC - PKI Estado Peruano
           </div>
           <div style="margin-bottom: 12px;">
-            <strong style="color: var(--text-muted);">Sello de Tiempo (TSA):</strong><br>
-            Sincronizado con INACAL - NTP.
+            <strong>Sello de Tiempo (TSA):</strong><br>
+            Sincronizado NTP INACAL.
           </div>
           <div style="margin-bottom: 12px;">
-            <strong style="color: var(--text-muted);">Hash Documental (SHA-256):</strong><br>
-            <span style="font-family: monospace; word-break: break-all; font-size: 9px; background: var(--bg-body); padding: 4px; display: block; margin-top: 4px; border: 1px solid var(--border-color);">
+            <strong>Hash Documental (SHA-256):</strong><br>
+            <span id="crypto-hash" style="font-family: monospace; word-break: break-all; font-size: 9px; background: var(--bg-body); padding: 4px; display: block; margin-top: 4px; border: 1px solid var(--border-color);">
               e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
             </span>
           </div>
-          <div style="background: #fffbeb; border-left: 3px solid #f59e0b; padding: 8px; color: #92400e; margin-top: 20px;">
-            <strong style="font-size: 10px;">LEY 29733 APLICADA:</strong><br>Documento pre-censurado técnicamente antes de su exposición pública.
+          <div style="background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px; color: #92400e; margin-top: 20px; border-radius: 4px;">
+            <strong style="font-size: 11px;">LEY 29733 APLICADA:</strong><br>Documento pre-censurado técnicamente antes de su exposición pública mediante marcas negras (Blackout).
           </div>
         </div>
 
@@ -337,8 +458,59 @@
     </div>
   </div>
 
+  <!-- CHATBOT IURISNIANO 2.0 -->
+  <div id="chatbot-wrapper">
+    <div id="chat-prompt-bubble" class="chat-incentive-bubble" onclick="toggleChatbotWindow()">
+      💬 ¡Hola! Soy Iurisniano 2.0 ⚖️ ¿Dudas sobre el Exp. 00170-2023?
+    </div>
+    <div id="chatbot-bubble" onclick="toggleChatbotWindow()" title="Asistente Legal Iurisniano 2.0">
+      <svg style="width: 34px; height: 34px; color: #ffffff;" viewBox="0 0 200 200" fill="none">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#fbcfe8" stroke-width="4"/>
+        <path d="M100 25 L100 160" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+        <path d="M80 160 L120 160" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+        <path d="M50 55 L150 55" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="100" cy="55" r="8" fill="#ffffff"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="chatbot-dialog">
+    <div style="background: var(--mag-darkest); color: white; padding: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--mag-vivid);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 34px; height: 34px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">⚖️</div>
+        <div>
+          <strong style="font-size: 14px;">IURISNIANO 2.0</strong>
+          <div style="font-size: 9.5px; color: #fce7f3;">Asistente Especializado NLPT</div>
+        </div>
+      </div>
+      <button onclick="toggleChatbotWindow()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer;">✕</button>
+    </div>
+    <div style="display: flex; gap: 6px; padding: 8px 10px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); overflow-x: auto;">
+      <button onclick="quickAskBot('Resumen del expediente 00170')" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 10px; font-size: 9.5px; cursor: pointer; white-space: nowrap; color: var(--mag-primary); font-weight: bold;">📊 Resumen Caso</button>
+      <button onclick="quickAskBot('¿Qué es la NLPT 29497?')" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 10px; font-size: 9.5px; cursor: pointer; white-space: nowrap; color: var(--mag-primary); font-weight: bold;">⚖️ Ley 29497</button>
+      <button onclick="quickAskBot('¿Por qué los datos están censurados?')" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 10px; font-size: 9.5px; cursor: pointer; white-space: nowrap; color: var(--mag-primary); font-weight: bold;">🔒 Ley N° 29733</button>
+    </div>
+    <div id="chatbot-log" style="flex-grow: 1; padding: 12px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--bg-body);">
+      <div style="background: var(--bg-surface); padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border-color); max-width: 88%; align-self: flex-start; color: var(--text-main);">
+        ¡Hola! 👋 Soy <strong>IURISNIANO 2.0</strong>. Estoy calibrado para explicarte el <strong>Expediente Laboral 00170-2023</strong> bajo la Nueva Ley Procesal del Trabajo (NLPT) y la validez criptográfica de sus documentos.
+      </div>
+    </div>
+    <div style="padding: 10px; border-top: 1px solid var(--border-color); display: flex; gap: 6px; background: var(--bg-surface);">
+      <input type="text" id="chatbot-text-input" placeholder="Escribe tu consulta..." style="flex-grow: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 11px; outline: none; background: var(--bg-body); color: var(--text-main);" onkeypress="if(event.key==='Enter') sendChatMessage()">
+      <button onclick="sendChatMessage()" style="background: var(--mag-primary); color: white; border: none; padding: 8px 14px; border-radius: 10px; font-size: 11px; cursor: pointer; font-weight: bold;">Enviar</button>
+    </div>
+  </div>
+
+  <footer class="academic-footer">
+    <div><strong>© 2026 PODER JUDICIAL DEL PERÚ - CORTE SUPERIOR DE JUSTICIA DE PUNO. TODOS LOS DERECHOS RESERVADOS.</strong></div>
+    <div style="color: #cbd5e1; margin-top: 4px; font-size: 10px;">PORTAL ELECTRÓNICO JUDICIAL | EJE 2.0 - DERECHO INFORMÁTICO</div>
+    <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">Autoría: Sonia Pilar Condori Ruelas | Docente: Dr. Michael Espinoza Coila</div>
+  </footer>
+
   <script>
-    // LÓGICA MODO OSCURO PERSISTENTE
+    /* ==========================================
+       LÓGICA CORE: TEMA OSCURO PERSISTENTE
+       ========================================== */
     function toggleTheme() {
       const html = document.documentElement;
       const currentTheme = html.getAttribute('data-theme');
@@ -346,47 +518,215 @@
       html.setAttribute('data-theme', newTheme);
       localStorage.setItem('eje-theme', newTheme);
     }
-    
-    // Cargar preferencia al iniciar
     document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('eje-theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
+      
+      // Pantalla de carga nativa Themis
+      setTimeout(() => {
+        document.getElementById('full-page-splash').style.opacity = '0';
+        setTimeout(() => document.getElementById('full-page-splash').style.display = 'none', 600);
+      }, 2000);
     });
 
-    // ACORDEONES
-    function toggleCard(id) {
-      const body = document.getElementById(id);
-      body.classList.toggle('collapsed');
-    }
+    /* ==========================================
+       LÓGICA PROCESAL: BASE DE DATOS EXP. 00170
+       ========================================== */
+    var ACTUADOS = [
+      {
+        n: 1, f: "Fjs. 1-15", d: "12/03/2023", t: "Escrito N° 01: Demanda Principal y Anexos", des: "Mesa de Partes Única. Demanda Laboral de Beneficios Sociales.",
+        icon: "📝", signer: "<span class='pdf-censored-black'>Abog. Ma*** Ro***</span> - CAP 102",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO", title: "ESCRITO N° 01: DEMANDA LABORAL",
+        content: `<p><strong>SUMILLA:</strong> INTERPONGO DEMANDA LABORAL DE PAGO DE BENEFICIOS SOCIALES.</p><p><strong>DEMANDANTE:</strong> <span class="pdf-censored-black">Hu*** Al*** Ay***</span></p><p>Que, recurro a su Despacho a fin de interponer demanda ordinaria contra <span class="pdf-censored-black">En*** Pr*** Sa*** Ro***</span> solicitando el pago de S/ 18,400.00 por CTS y vacaciones truncas, adjuntando a fojas 5 los contratos desnaturalizados.</p>`,
+        hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        n: 2, f: "Fjs. 16", d: "20/03/2023", t: "Resolución N° 01: Auto Admisorio", des: "Admite formalmente la demanda vía Proceso Ordinario Laboral.",
+        icon: "⚖️", signer: "Huamán Romero, Gonzalo Víctor - JUEZ",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO", title: "RESOLUCIÓN NRO. 01 (AUTO ADMISORIO)",
+        content: `<p><strong>SE RESUELVE:</strong> ADMITIR a trámite la demanda interpuesta por <span class="pdf-censored-black">Hu*** Al*** Ay***</span>. Córrase traslado a la demandada por el plazo de Ley (10 días) bajo apercibimiento de rebeldía.</p>`,
+        hash: "a4f8c12098fc1c149afbf4c8996fb92427ae41e4649b934ca495991b72352b221"
+      },
+      {
+        n: 3, f: "Fjs. 40", d: "10/05/2023", t: "Acta Judicial: Audiencia de Conciliación", des: "Etapa de Conciliación frustrada. Se fijan puntos controvertidos.",
+        icon: "🎤", signer: "Huamán Romero, Gonzalo Víctor - JUEZ",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO", title: "ACTA DE AUDIENCIA DE CONCILIACIÓN (NLPT)",
+        content: `<p>En la ciudad de Puno, se instaló la audiencia. Invitadas a conciliar, las partes no arribaron a acuerdo. <strong>PUNTOS CONTROVERTIDOS:</strong> 1. Determinar si existió vínculo laboral a plazo indeterminado. 2. Determinar si corresponde el pago de CTS y vacaciones.</p>`,
+        hash: "b5c7d23098fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7859c112"
+      },
+      {
+        n: 4, f: "Fjs. 45-48", d: "15/06/2023", t: "Acta Judicial: Audiencia Única de Juzgamiento", des: "Despliegue probatorio oral y alegatos de clausura.",
+        icon: "🎤", signer: "Huamán Romero, Gonzalo Víctor - JUEZ",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO", title: "ACTA DE AUDIENCIA DE JUZGAMIENTO (NLPT)",
+        content: `<p>Actuación probatoria. Se admiten las documentales de fojas 1 a 15. Alegatos finales emitidos. El Juzgado difiere el fallo para los próximos 5 días hábiles según la Ley 29497.</p>`,
+        hash: "d7f9e44098fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7856d223"
+      },
+      {
+        n: 5, f: "Fjs. 50-62", d: "28/08/2023", t: "Resolución N° 04: SENTENCIA", des: "Declara FUNDADA la demanda en todos sus extremos.",
+        icon: "⚖️", signer: "Huamán Romero, Gonzalo Víctor - JUEZ",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO", title: "SENTENCIA LABORAL N° 089-2023-JTL",
+        content: `<p><strong>FALLO:</strong> Declarando <strong>FUNDADA</strong> la demanda por pago de beneficios sociales interpuesta por <span class="pdf-censored-black">Hu*** Al*** Ay***</span>. ORDENO a la demandada pague la suma de S/ 18,400.00 con sus respectivos intereses legales.</p>`,
+        hash: "f9a1b55098fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7858e334"
+      },
+      {
+        n: 6, f: "Fjs. 75", d: "10/10/2023", t: "Resolución N° 08: Requerimiento de Ejecución", des: "Sentencia Firme. Se ordena el depósito bancario de lo sentenciado.",
+        icon: "⚖️", signer: "Huamán Romero, Gonzalo Víctor - JUEZ",
+        header: "JUZGADO DE TRABAJO - ZONA NORTE PUNO (EN EJECUCIÓN)", title: "RESOLUCIÓN NRO. 08 (AUTO DE REQUERIMIENTO)",
+        content: `<p>Al haber quedado consentida la Sentencia, <strong>SE RESUELVE:</strong> Requerir a la entidad demandada el depósito judicial de la suma liquidada de S/ 18,400.00 en el Banco de la Nación en el plazo de 5 días hábiles.</p>`,
+        hash: "c2e3f66098fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7859f445"
+      }
+    ];
 
-    // FLUJO DE PANTALLAS (CON SKELETON LOADER)
+    /* ==========================================
+       RENDERIZADO DE LA INTERFAZ
+       ========================================== */
     function switchScreen(num) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.screen-stage').forEach(el => el.classList.remove('active'));
       document.getElementById('screen-' + num).classList.add('active');
+      window.scrollTo(0, 0);
+
+      const bot = document.getElementById('chatbot-wrapper');
+      if(num === 5) {
+        bot.style.display = 'flex';
+        renderTimeline();
+        renderTable();
+      } else {
+        bot.style.display = 'none';
+        document.getElementById('chatbot-dialog').style.display = 'none';
+      }
     }
 
-    function loadExpediente() {
-      switchScreen(2); // Muestra Skeleton
+    function startSearchFlow() {
+      switchScreen(4); // Mostrar Skeleton Loader
+      setTimeout(() => switchScreen(5), 1800);
+    }
+
+    function exitToHome() { switchScreen(0); }
+
+    function toggleAccordion(id) {
+      const content = document.getElementById(id);
+      const icon = document.getElementById(id + '-icon');
+      if (content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        icon.innerText = '▲';
+      } else {
+        content.classList.add('collapsed');
+        icon.innerText = '▼';
+      }
+    }
+
+    function renderTimeline() {
+      const tBox = document.getElementById('timeline-flow-box');
+      tBox.innerHTML = '';
+      [ACTUADOS[1], ACTUADOS[2], ACTUADOS[3], ACTUADOS[4], ACTUADOS[5]].forEach(item => {
+        tBox.innerHTML += `
+          <div class="timeline-node" onclick="openPdfDocument(${item.n})" style="cursor:pointer;">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+                <strong style="color:var(--mag-vivid);">${item.t}</strong>
+                <span style="color:var(--text-muted); font-family:monospace;">${item.d}</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-main);">${item.des}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('acts-table-body');
+      tbody.innerHTML = '';
+      ACTUADOS.forEach(a => {
+        tbody.innerHTML += `
+          <tr>
+            <td style="font-family:monospace; font-weight:bold;">${a.f}</td>
+            <td>${a.d}</td>
+            <td>
+              <span style="font-size:14px;">${a.icon}</span> 
+              <strong style="color:var(--mag-primary);">${a.t}</strong>
+              <div style="font-size:11px; color:var(--text-muted);">${a.des}</div>
+            </td>
+            <td>
+              <button onclick="openPdfDocument(${a.n})" class="btn-row-action">📄 Ver PDF (Verificado)</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    /* ==========================================
+       VISOR PDF SIMULADO Y PANEL CRIPTOGRÁFICO
+       ========================================== */
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openPdfDocument(num) {
+      const act = ACTUADOS.find(a => a.n === num);
+      if (!act) return;
+      
+      document.getElementById('pdf-doc-name').innerText = act.t + ".pdf";
+      document.getElementById('crypto-signer').innerHTML = act.signer;
+      document.getElementById('crypto-hash').innerText = act.hash;
+
+      const paper = document.getElementById('pdf-doc-paper');
+      paper.innerHTML = `
+        <div class="pdf-sij-barcode">EXP: 00170-2023-0<br>*22023001702101334000038*</div>
+        <div class="pdf-court-header">
+          <strong style="font-size: 14px;">PODER JUDICIAL DEL PERÚ</strong><br>
+          <span style="font-size: 11px;">${act.header}</span>
+        </div>
+        <h3 style="font-size: 13px; text-align: center; margin-bottom: 16px;">${act.title}</h3>
+        <div style="text-align: justify; font-size: 13px; line-height: 1.8;">${act.content}</div>
+        <div class="pdf-digital-signature">
+          <div><strong>FIRMADO DIGITALMENTE (LEY 27269 / D. LEG. N° 1412)</strong><br>Firmante Identificado en Panel Lateral.</div>
+        </div>
+      `;
+      openModal('modal-pdf-view');
+    }
+
+    /* ==========================================
+       CHATBOT IURISNIANO 2.0
+       ========================================== */
+    function toggleChatbotWindow() {
+      const w = document.getElementById('chatbot-dialog');
+      document.getElementById('chat-prompt-bubble').style.display = 'none';
+      w.style.display = w.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function quickAskBot(text) {
+      document.getElementById('chatbot-text-input').value = text;
+      sendChatMessage();
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatbot-text-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const log = document.getElementById('chatbot-log');
+      
+      // Mensaje Usuario
+      log.innerHTML += `<div style="background:var(--mag-primary); color:white; padding:9px 13px; border-radius:14px; max-width:85%; align-self:flex-end; font-size:12px; margin-top:8px;">${val}</div>`;
+      input.value = "";
+      log.scrollTop = log.scrollHeight;
+
+      // Procesamiento Iurisniano 2.0
+      const q = val.toLowerCase();
+      let resp = "Soy **Iurisniano 2.0**. Puedo ayudarte sobre la NLPT, el EJE o la anonimización de este expediente laboral.";
+
+      if (q.includes("resumen") || q.includes("170")) {
+        resp = "📋 **RESUMEN DEL CASO (Exp. 00170-2023):**<br>• **Materia:** Pago de Beneficios Sociales.<br>• **Partes:** Hu*** Al*** Ay*** vs En*** Pr***.<br>• **Fallo:** Demanda FUNDADA.<br>• **Estado Actual:** **Etapa de Ejecución** (Resolución N° 08).";
+      } else if (q.includes("29497") || q.includes("nlpt")) {
+        resp = "⚖️ **NUEVA LEY PROCESAL DEL TRABAJO (Ley 29497):**<br>Este expediente sigue el modelo de la NLPT, priorizando la **oralidad** mediante la Audiencia de Conciliación y la Audiencia de Juzgamiento, cuyas actas están disponibles en el Índice Digital.";
+      } else if (q.includes("29733") || q.includes("censurados")) {
+        resp = "🔒 **PROTECCIÓN DE DATOS PERSONALES:**<br>En cumplimiento de la **Ley N° 29733**, todos los documentos presentados en este visor público han pasado por un proceso de censura técnica (*Blackout*) para proteger la identidad de los sujetos procesales.";
+      }
+
       setTimeout(() => {
-        switchScreen(3); // Muestra Expediente real tras 1.5s
-      }, 1500);
-    }
-
-    // LÓGICA VISOR PDF Y PANEL CRIPTOGRÁFICO
-    function openPdfViewer(fileName, signerName) {
-      document.getElementById('modal-doc-title').innerText = "Visualizando: " + fileName;
-      document.getElementById('crypto-signer').innerText = signerName;
-      
-      // En tu proyecto real, aquí asignas la URL de tu PDF alojado en GitHub:
-      // document.getElementById('iframe-pdf').src = "documentos/" + fileName;
-      
-      document.getElementById('modal-pdf').style.display = 'flex';
-    }
-
-    function closePdfViewer() {
-      // Limpiar iframe para detener descargas/renderizados en segundo plano
-      document.getElementById('iframe-pdf').src = "about:blank";
-      document.getElementById('modal-pdf').style.display = 'none';
+        log.innerHTML += `<div style="background:var(--bg-surface); padding:10px 13px; border-radius:14px; border:1px solid var(--border-color); max-width:88%; align-self:flex-start; font-size:12px; margin-top:8px; color:var(--text-main);">${resp}</div>`;
+        log.scrollTop = log.scrollHeight;
+      }, 600);
     }
   </script>
 </body>
